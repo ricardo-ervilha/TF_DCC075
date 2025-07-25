@@ -1,0 +1,13 @@
+# para baixar o dataset do kaggle
+kagglehub
+
+# bibliotecas básicas
+numpy
+scipy
+pandas
+
+# machine learning
+scikit-learn
+
+# visualização de gráficos
+matplotlib
