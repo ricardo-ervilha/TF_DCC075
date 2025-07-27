@@ -5,6 +5,7 @@ kagglehub
 numpy
 scipy
 pandas
+polars # pandas multithreading
 
 # machine learning
 scikit-learn
