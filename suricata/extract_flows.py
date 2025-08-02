@@ -67,12 +67,12 @@ def process_line(line):
             #flow_packets_per_sec
             total_packets = features["Total Fwd Packets"] + features["Total Backward Packets"]
 
-            duration = max(features["Flow Duration"], 0.001)
-            features["Flow Packets/s"] =  (total_packets / (duration / 1000000))
+            duration = max(features["Flow Duration"] / 1000000, 0.001)
+            features["Flow Packets/s"] =  (total_packets / duration)
 
             #flow_bytes_per_sec 
             total_bytes = features["Total Length of Fwd Packets"] + features["Total Length of Bwd Packets"]
-            features["Flow Bytes/s"] = total_bytes / (duration / 1000000)
+            features["Flow Bytes/s"] = total_bytes / duration
             
             #down_up_ratio
             features["Down/Up Ratio"] = features["Total Length of Bwd Packets"] / features["Total Length of Fwd Packets"]
