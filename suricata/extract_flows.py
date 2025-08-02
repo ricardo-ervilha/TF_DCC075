@@ -23,7 +23,7 @@ def extractDuration(start, end):
     startDate = datetime.fromisoformat(start)
     endDate = datetime.fromisoformat(end)
     duration = endDate - startDate
-    return duration.microseconds
+    return duration.total_seconds() * 1_000_000
 
 def process_line(line):
                 #"src_ip": event.get("src_ip"),
@@ -67,16 +67,16 @@ def process_line(line):
             #flow_packets_per_sec
             total_packets = features["Total Fwd Packets"] + features["Total Backward Packets"]
 
-            #features["Flow Packets/s"] =  (total_packets / (features["Flow Duration"] / 1000000)) if features["Flow Duration"] > 0 else (total_packets / (0.00001 / 1000000))
+            duration = max(features["Flow Duration"], 0.001)
+            features["Flow Packets/s"] =  (total_packets / (duration / 1000000))
 
             #flow_bytes_per_sec 
             total_bytes = features["Total Length of Fwd Packets"] + features["Total Length of Bwd Packets"]
-            #features["Flow Bytes/s"] = total_bytes / (features["Flow Duration"] / 1000000)
+            features["Flow Bytes/s"] = total_bytes / (duration / 1000000)
             
             #down_up_ratio
-            #features["Down/Up Ratio"] = features["Total Length of Bwd Packets"] / features["Total Length of Fwd Packets"]
+            features["Down/Up Ratio"] = features["Total Length of Bwd Packets"] / features["Total Length of Fwd Packets"]
 
-           
             return features
         
     except json.JSONDecodeError:
