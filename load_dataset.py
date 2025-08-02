@@ -1,19 +1,19 @@
 import kagglehub
-import pandas as pd
+import polars as pl
 import os
 
-def load():
+def load(filenames: list):
     # Realiza o download do dataset (caso não tenha baixado), e o armazena em um .cache
     path = kagglehub.dataset_download("chethuhn/network-intrusion-dataset")
     # print(path) # Descomente caso queira ver onde foi guardado.
-
-    filenames = [
-        "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-        "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
-        "Friday-WorkingHours-Morning.pcap_ISCX.csv",
-        "Monday-WorkingHours.pcap_ISCX.csv",
-        "Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
-        "Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv",
-        "Tuesday-WorkingHours.pcap_ISCX.csv",
-        "Wednesday-workingHours.pcap_ISCX.csv"
-    ]
+    
+    dfs = []
+    for fn in filenames:
+        filepath = os.path.join(path, fn)
+        pldf = pl.read_csv(filepath, infer_schema_length=10000)
+        pldf = pldf.rename({col: col.strip() for col in pldf.columns})
+        dfs.append(pldf)
+    
+    dfs = pl.concat(dfs)
+    
+    return dfs
