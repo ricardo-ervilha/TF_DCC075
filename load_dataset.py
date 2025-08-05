@@ -1,6 +1,8 @@
 import kagglehub
-import polars as pl
+#import polars as pl
 import os
+import pandas as pd
+from datasets import load_dataset
 
 def load(filenames: list):
     # Realiza o download do dataset (caso não tenha baixado), e o armazena em um .cache
@@ -10,10 +12,9 @@ def load(filenames: list):
     dfs = []
     for fn in filenames:
         filepath = os.path.join(path, fn)
-        pldf = pl.read_csv(filepath, infer_schema_length=10000)
-        pldf = pldf.rename({col: col.strip() for col in pldf.columns})
-        dfs.append(pldf)
+        df = pd.read_csv(filepath)
+        dfs.append(df)
     
-    dfs = pl.concat(dfs)
-    
+    dfs = pd.concat(dfs)
+    dfs.drop_duplicates(inplace=True)
     return dfs
