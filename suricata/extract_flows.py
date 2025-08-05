@@ -2,8 +2,7 @@ import json
 import pandas as pd
 import time
 from datetime import datetime
-#Caminho onde é  salvo os logs do suricata
-eve_log_path = '/var/log/suricata/eve.json'
+
 
 flow_data = []
 datetime
@@ -64,11 +63,10 @@ def process_line(line):
             features["Flow Duration"] = extractDuration(flow.get("start"), flow.get("end"))
             
             
+            duration = max(features["Flow Duration"] / 1000000, 0.001)
             #flow_packets_per_sec
             total_packets = features["Total Fwd Packets"] + features["Total Backward Packets"]
-
-            duration = max(features["Flow Duration"] / 1000000, 0.001)
-            features["Flow Packets/s"] =  (total_packets / duration)
+            features["Flow Packets/s"] = total_packets / duration
 
             #flow_bytes_per_sec 
             total_bytes = features["Total Length of Fwd Packets"] + features["Total Length of Bwd Packets"]
@@ -77,14 +75,17 @@ def process_line(line):
             #down_up_ratio
             features["Down/Up Ratio"] = features["Total Length of Bwd Packets"] / features["Total Length of Fwd Packets"]
 
+           
             return features
         
     except json.JSONDecodeError:
         return None
 
-with open(eve_log_path, 'r') as f:
-    for line in follow(f):
-        flow_data = process_line(line)
-        if flow_data:
-            print("Fluxo capturado: ", flow_data)  
+
+def follow_flows(eve_log_path, on_flow):
+    with open(eve_log_path, 'r') as f:
+        for line in follow(f):
+            flow_data = process_line(line)
+            if flow_data:
+                on_flow(flow_data)
 
