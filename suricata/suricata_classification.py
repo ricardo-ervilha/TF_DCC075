@@ -2,6 +2,7 @@ from extract_flows import follow_flows
 import joblib
 import numpy as np
 import warnings
+import sys 
 warnings.filterwarnings("ignore")
 #Caminho onde é  salvo os logs do suricata
 eve_log_path = '/var/log/suricata/eve.json'
@@ -19,4 +20,4 @@ def meu_callback(flow_data):
 def print_flow(flow_data):
     teste = flow_data
 
-follow_flows(eve_log_path, meu_callback)
+follow_flows(eve_log_path, meu_callback, test=sys.argv[1])
